@@ -8,6 +8,11 @@ pub struct KeySpace {
     pub public_key: PublicKey,
 }
 
+impl Default for KeySpace {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 impl KeySpace {
     pub fn new() -> Self {
         let secp_256k1 = Secp256k1::new();

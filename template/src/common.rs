@@ -24,11 +24,7 @@ impl<T: Serialize> ByteOps for T {
 pub trait SecpVRF {
     fn message(&self) -> Result<Message, Error>;
 
-    fn verify(
-        &self,
-        public_key: &PublicKey,
-        signature: EcdsaSignature,
-    ) -> Result<(), Error>;
+    fn verify(&self, public_key: &PublicKey, signature: EcdsaSignature) -> Result<(), Error>;
 
     fn sign(&self, secret_key: SecretKey) -> Result<EcdsaSignature, Error>;
 }
@@ -38,18 +34,16 @@ impl SecpVRF for [u8] {
     /// Get a message from a type
     /// # Example
     /// ```
-    /// use secp256k1::{PublicKey, SecretKey};
-    ///
+    /// use template::common::SecpVRF;
+    /// let message = "Hello World".as_bytes().message().unwrap();
+    /// ```
     fn message(&self) -> Result<Message, Error> {
         let message = Message::from_hashed_data::<sha256::Hash>(self);
         Ok(message)
     }
 
-    fn verify(
-        &self,
-        public_key: &PublicKey,
-        signature: EcdsaSignature,
-    ) -> Result<(), Error> {
+    /// Verify a signature
+    fn verify(&self, public_key: &PublicKey, signature: EcdsaSignature) -> Result<(), Error> {
         let message = Self::message(self)?;
         match signature.verify(&message, public_key) {
             Ok(_) => Ok(()),
@@ -76,11 +70,7 @@ impl<T: Serialize + Deserialize<'static>> SecpVRF for T {
         Ok(message)
     }
 
-    fn verify(
-        &self,
-        public_key: &PublicKey,
-        signature: EcdsaSignature,
-    ) -> Result<(), Error> {
+    fn verify(&self, public_key: &PublicKey, signature: EcdsaSignature) -> Result<(), Error> {
         let json_str_result = serde_json::to_string(&self);
         let json_str = match json_str_result {
             Ok(str) => str,
