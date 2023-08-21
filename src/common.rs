@@ -35,6 +35,11 @@ pub trait SecpVRF {
 
 // trait implementation for slices
 impl SecpVRF for [u8] {
+    /// Get a message from a type
+    /// # Example
+    /// ```
+    /// use secp256k1::{PublicKey, SecretKey};
+    ///
     fn get_message(&self) -> Result<Message, Error> {
         let message = Message::from_hashed_data::<sha256::Hash>(self);
         Ok(message)
@@ -114,7 +119,7 @@ pub fn get_signature_from_bytes(bytes: &[u8]) -> Result<EcdsaSignature, Error> {
     Ok(signature)
 }
 
-pub fn address(verifying_key_bytes: &Vec<u8>) -> Result<[u8; 20], Error> {
+pub fn get_ethereum_address(verifying_key_bytes: &Vec<u8>) -> Result<[u8; 20], Error> {
     let public_key = match PublicKey::from_slice(verifying_key_bytes.as_slice()) {
         Ok(public_key) => public_key,
         Err(err) => return Err(anyhow!("Unable to construct public key {:?}", err)),

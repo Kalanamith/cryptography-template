@@ -2,7 +2,7 @@ use anyhow::{anyhow, Error};
 use secp256k1::rand::rngs::OsRng;
 use secp256k1::{PublicKey, Secp256k1, SecretKey};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct KeySpace {
     pub secret_key: SecretKey,
     pub public_key: PublicKey,

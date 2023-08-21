@@ -3,22 +3,20 @@ mod tests {
 
     use crate::common::{ByteOps, SecpVRF};
     use crate::secp::KeySpace;
-    
+
     use secp256k1::SecretKey;
     use serde::{Deserialize, Serialize};
 
     mod gen {
-        
-        
-        use ethers::core::types::{Address};
-        
+
+        use ethers::core::types::Address;
+
         use ethers::utils::keccak256;
         use k256::elliptic_curve::sec1::ToEncodedPoint;
         use k256::PublicKey as K256PublicKey;
         use secp256k1::hashes::sha256;
         use secp256k1::{Message, Secp256k1, SecretKey};
         use serde::{Deserialize, Serialize};
-        use sha3::{Digest};
 
         #[derive(Serialize, Deserialize, Debug)]
         struct PlainText {
@@ -203,6 +201,24 @@ mod tests {
             let res = payload.verify_with_ecdsa(&key_space.public_key, signature.unwrap());
             assert!(res.is_ok());
         }
+
+        #[tokio::test(flavor = "current_thread")]
+        async fn test_get_message() {
+            #[derive(Serialize, Deserialize, Debug)]
+            struct Payload {
+                pub message: Vec<u8>,
+            }
+            let payload = Payload {
+                message: "Cryptography prior to the modern age was effectively synonymous with encryption, converting readable information (plaintext) to unintelligible nonsense text (ciphertext)".as_bytes().to_vec(),
+            };
+
+            let payload_bytes = payload.to_bytes().unwrap();
+            let message = payload_bytes.get_message().unwrap();
+            assert_eq!(
+                message.to_string(),
+                "b0d53e9c722717d65d3e673ddb3c17a6eab82e371a7a5f6ed83efa2bda1405f6"
+            )
+        }
     }
 
     mod keyspace {
@@ -227,6 +243,19 @@ mod tests {
 
             assert_eq!(pub_key_bytes.len(), 33);
             assert_eq!(sec_key_bytes.len(), 32);
+        }
+    }
+
+    mod common {
+        use super::*;
+        use crate::common::get_ethereum_address;
+
+        #[tokio::test(flavor = "current_thread")]
+        async fn test_address() {
+            let key_space = KeySpace::new();
+            let public_key_bytes = key_space.to_bytes_public_key();
+            let address = get_ethereum_address(&public_key_bytes).unwrap();
+            assert_eq!(address.len(), 20);
         }
     }
 }
