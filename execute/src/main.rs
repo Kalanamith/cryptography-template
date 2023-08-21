@@ -1,10 +1,8 @@
+use template::common::{get_ethereum_address, SecpVRF};
 use template::secp::KeySpace;
-use template::common::{SecpVRF, get_ethereum_address};
 
-
-use serde::{Deserialize, Serialize};
 use hex::encode;
-
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Payload {
@@ -32,7 +30,7 @@ fn main() {
     let reconstructed_key_space = KeySpace::from_bytes_key_space(&key_space_bytes).unwrap();
     println!("{}", key_space == reconstructed_key_space);
 
-    let public_key_from_bytes =KeySpace::public_key_from_bytes(&public_key_bytes).unwrap();
+    let public_key_from_bytes = KeySpace::public_key_from_bytes(&public_key_bytes).unwrap();
     let private_key_from_bytes = KeySpace::secret_key_from_bytes(&private_key_bytes).unwrap();
 
     println!("{}", public_key == public_key_from_bytes);
@@ -43,13 +41,19 @@ fn main() {
     };
 
     let signed_payload = payload.sign(private_key).unwrap();
-    println!("Signed payload hex string: {:?}", encode(signed_payload.serialize_compact()));
+    println!(
+        "Signed payload hex string: {:?}",
+        encode(signed_payload.serialize_compact())
+    );
 
     println!("Signed Payload: {:?}", signed_payload);
     let verified = payload.verify(&public_key, signed_payload);
     println!("Verified: {:?}", verified.is_ok());
 
-    let new_ethereum_address =  get_ethereum_address(&public_key_bytes).unwrap();
+    let new_ethereum_address = get_ethereum_address(&public_key_bytes).unwrap();
     println!("New Ethereum Address: {:?}", new_ethereum_address);
-    println!("New ethereum address hex string: {:?}", encode(new_ethereum_address));
+    println!(
+        "New ethereum address hex string: {:?}",
+        encode(new_ethereum_address)
+    );
 }
