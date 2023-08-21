@@ -1,0 +1,17 @@
+[package]
+name = "execute"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.163", features = ["derive"] }
+serde_bytes = "0.11.9"
+hex = "0.4.3"
+serde_json = "1"
+template = {path = "../template" , default-features = false}
+
+[[bin]]
+name = "execute"
+path = "src/main.rs"
