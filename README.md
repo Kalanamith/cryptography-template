@@ -85,7 +85,6 @@ Generated key pairs are saved in JSON format:
 - Public/private key generation
 - Address derivation
 - Key serialization and deserialization
-- Signature creation and verification
 
 ### File Operations
 - Save single key pairs to JSON files
