@@ -1,4 +1,4 @@
-# Cryptography Tools
+# Cryptography Template
 
 [![Rust CI](https://github.com/Kalanamith/cryptography-template/actions/workflows/rust.yml/badge.svg)](https://github.com/Kalanamith/cryptography-template/actions/workflows/rust.yml)
 
