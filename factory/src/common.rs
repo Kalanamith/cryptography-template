@@ -3,7 +3,6 @@ use k256::ecdsa::{Signature, SigningKey};
 use k256::elliptic_curve::sec1::ToEncodedPoint;
 use k256::PublicKey as K256PublicKey;
 use serde::Serialize;
-use sha3::{Digest, Keccak256};
 /// Trait for converting types to bytes
 pub trait ByteOps {
     /// Converts the type to bytes

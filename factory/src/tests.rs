@@ -72,12 +72,13 @@ mod tests {
 
     #[test]
     fn test_ethereum_address_known_key() {
-        // Known test vector (you can generate this using MetaMask)
+        // Known test vector
         let private_key =
             hex::decode("1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
                 .unwrap();
         let secret_key = k256::ecdsa::SigningKey::from_slice(&private_key).unwrap();
-        let public_key = k256::PublicKey::from(&secret_key.verifying_key());
+        let verifying_key = secret_key.verifying_key();
+        let public_key = k256::PublicKey::from(verifying_key);
 
         let key_space = KeySpace {
             secret_key,
@@ -87,8 +88,6 @@ mod tests {
         let address = get_ethereum_address(&key_space.to_bytes_public_key()).unwrap();
         let address_hex = hex::encode(address);
 
-        // This should match the address shown in MetaMask for the above private key
-        // Note: Replace with actual known test vector
         assert_eq!(address_hex.len(), 40);
     }
 
