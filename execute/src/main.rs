@@ -29,6 +29,12 @@ enum Commands {
         /// Optional output JSON file path
         #[arg(short, long)]
         output: Option<PathBuf>,
+        /// Generate multiple key pairs (default: 1)
+        #[arg(short, long, default_value = "1")]
+        count: usize,
+        /// Output directory for multiple key pairs
+        #[arg(short, long)]
+        dir: Option<PathBuf>,
     },
     /// Reconstruct public key from hex string
     ReconstructPublic {
@@ -51,30 +57,45 @@ fn save_to_json(keypair: &KeyPair, path: &PathBuf) -> Result<(), Box<dyn std::er
     Ok(())
 }
 
+fn generate_keypair() -> Result<KeyPair, Box<dyn std::error::Error>> {
+    let key_space = KeySpace::new();
+    Ok(KeyPair {
+        public_key: encode(key_space.to_bytes_public_key()),
+        private_key: encode(key_space.to_bytes_secret_key()),
+        ethereum_address: encode(get_ethereum_address(&key_space.to_bytes_public_key())?),
+    })
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Generate { output } => {
-            let key_space = KeySpace::new();
-            
-            let public_key_hex = encode(key_space.to_bytes_public_key());
-            let private_key_hex = encode(key_space.to_bytes_secret_key());
-            let ethereum_address = encode(get_ethereum_address(&key_space.to_bytes_public_key())?);
+        Commands::Generate { output, count, dir } => {
+            if count > 1 {
+                let dir = dir.ok_or("Directory path is required for multiple key pairs")?;
+                std::fs::create_dir_all(&dir)?;
+                
+                for i in 0..count {
+                    let keypair = generate_keypair()?;
+                    let file_path = dir.join(format!("keypair_{}.json", i + 1));
+                    save_to_json(&keypair, &file_path)?;
+                    println!("Generated keypair {} of {}:", i + 1, count);
+                    println!("Public Key (hex): {}", keypair.public_key);
+                    println!("Private Key (hex): {}", keypair.private_key);
+                    println!("Ethereum Address: {}", keypair.ethereum_address);
+                    println!("Saved to: {}\n", file_path.display());
+                }
+            } else {
+                let keypair = generate_keypair()?;
+                println!("Generated Key Pair:");
+                println!("Public Key (hex): {}", keypair.public_key);
+                println!("Private Key (hex): {}", keypair.private_key);
+                println!("Ethereum Address: {}", keypair.ethereum_address);
 
-            println!("Generated Key Pair:");
-            println!("Public Key (hex): {}", public_key_hex);
-            println!("Private Key (hex): {}", private_key_hex);
-            println!("Ethereum Address: {}", ethereum_address);
-
-            if let Some(path) = output {
-                let keypair = KeyPair {
-                    public_key: public_key_hex,
-                    private_key: private_key_hex,
-                    ethereum_address,
-                };
-                save_to_json(&keypair, &path)?;
-                println!("Keys saved to: {}", path.display());
+                if let Some(path) = output {
+                    save_to_json(&keypair, &path)?;
+                    println!("Keys saved to: {}", path.display());
+                }
             }
         }
         Commands::ReconstructPublic { key } => {
