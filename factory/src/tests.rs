@@ -2,11 +2,11 @@
 mod tests {
     use crate::common::{get_ethereum_address, SecpVRF};
     use crate::secp::KeySpace;
-    use serde::{Deserialize, Serialize};
     use k256::ecdsa::{
         signature::{Signer, Verifier},
         VerifyingKey,
     };
+    use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
     struct TestPayload {
@@ -14,12 +14,19 @@ mod tests {
     }
 
     impl SecpVRF for TestPayload {
-        fn sign(&self, private_key: k256::ecdsa::SigningKey) -> Result<k256::ecdsa::Signature, Box<dyn std::error::Error>> {
+        fn sign(
+            &self,
+            private_key: k256::ecdsa::SigningKey,
+        ) -> Result<k256::ecdsa::Signature, Box<dyn std::error::Error>> {
             let message = serde_json::to_string(self)?;
             Ok(private_key.sign(message.as_bytes()))
         }
 
-        fn verify(&self, public_key: &k256::PublicKey, signature: k256::ecdsa::Signature) -> Result<(), Box<dyn std::error::Error>> {
+        fn verify(
+            &self,
+            public_key: &k256::PublicKey,
+            signature: k256::ecdsa::Signature,
+        ) -> Result<(), Box<dyn std::error::Error>> {
             let message = serde_json::to_string(self)?;
             let verifying_key = VerifyingKey::from(public_key);
             verifying_key.verify(message.as_bytes(), &signature)?;
@@ -59,4 +66,4 @@ mod tests {
         let signature = payload.sign(key_space.secret_key).unwrap();
         assert!(payload.verify(&key_space.public_key, signature).is_ok());
     }
-} 
+}

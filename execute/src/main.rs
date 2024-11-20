@@ -74,7 +74,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if count > 1 {
                 let dir = dir.ok_or("Directory path is required for multiple key pairs")?;
                 std::fs::create_dir_all(&dir)?;
-                
+
                 for i in 0..count {
                     let keypair = generate_keypair()?;
                     let file_path = dir.join(format!("keypair_{}.json", i + 1));
@@ -99,16 +99,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         Commands::ReconstructPublic { key } => {
-            let public_key_bytes = decode(&key)?;
+            let public_key_bytes = decode(key)?;
             let public_key = KeySpace::public_key_from_bytes(&public_key_bytes)?;
             println!("Reconstructed Public Key:");
             println!("Public Key (hex): {}", encode(public_key.to_sec1_bytes()));
-            
+
             let ethereum_address = encode(get_ethereum_address(&public_key_bytes)?);
             println!("Ethereum Address: {}", ethereum_address);
         }
         Commands::ReconstructPrivate { key } => {
-            let private_key_bytes = decode(&key)?;
+            let private_key_bytes = decode(key)?;
             let private_key = KeySpace::secret_key_from_bytes(&private_key_bytes)?;
             println!("Reconstructed Private Key:");
             println!("Private Key (hex): {}", encode(private_key.to_bytes()));

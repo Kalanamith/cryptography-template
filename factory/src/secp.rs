@@ -1,22 +1,19 @@
-use k256::{
-    ecdsa::SigningKey,
-    PublicKey,
-};
+use k256::{ecdsa::SigningKey, PublicKey};
 
 /// A structure representing a key pair for ECDSA operations
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use factory::secp::KeySpace;
-/// 
+///
 /// // Generate a new key pair
 /// let key_space = KeySpace::new();
-/// 
+///
 /// // Convert to bytes and back
 /// let bytes = key_space.to_bytes_key_space();
 /// let reconstructed = KeySpace::from_bytes_key_space(&bytes).unwrap();
-/// 
+///
 /// assert_eq!(key_space, reconstructed);
 /// ```
 #[derive(Debug, PartialEq)]
@@ -25,14 +22,20 @@ pub struct KeySpace {
     pub public_key: PublicKey,
 }
 
+impl Default for KeySpace {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl KeySpace {
     /// Creates a new random key pair
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use factory::secp::KeySpace;
-    /// 
+    ///
     /// let key_space = KeySpace::new();
     /// assert!(!key_space.to_bytes_public_key().is_empty());
     /// assert!(!key_space.to_bytes_secret_key().is_empty());
@@ -41,7 +44,7 @@ impl KeySpace {
         let secret_key = SigningKey::random(&mut rand::thread_rng());
         let verifying_key = secret_key.verifying_key();
         let public_key = PublicKey::from(verifying_key);
-        
+
         Self {
             secret_key,
             public_key,
@@ -49,12 +52,12 @@ impl KeySpace {
     }
 
     /// Converts the public key to bytes
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use factory::secp::KeySpace;
-    /// 
+    ///
     /// let key_space = KeySpace::new();
     /// let public_bytes = key_space.to_bytes_public_key();
     /// assert_eq!(public_bytes.len(), 33); // Compressed public key is 33 bytes
@@ -64,12 +67,12 @@ impl KeySpace {
     }
 
     /// Converts the secret key to bytes
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use factory::secp::KeySpace;
-    /// 
+    ///
     /// let key_space = KeySpace::new();
     /// let secret_bytes = key_space.to_bytes_secret_key();
     /// assert_eq!(secret_bytes.len(), 32); // Secret key is 32 bytes
@@ -79,12 +82,12 @@ impl KeySpace {
     }
 
     /// Converts both keys to a single byte array
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use factory::secp::KeySpace;
-    /// 
+    ///
     /// let key_space = KeySpace::new();
     /// let bytes = key_space.to_bytes_key_space();
     /// assert_eq!(bytes.len(), 65); // 32 bytes secret + 33 bytes public
@@ -97,12 +100,12 @@ impl KeySpace {
     }
 
     /// Reconstructs a key pair from bytes
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use factory::secp::KeySpace;
-    /// 
+    ///
     /// let original = KeySpace::new();
     /// let bytes = original.to_bytes_key_space();
     /// let reconstructed = KeySpace::from_bytes_key_space(&bytes).unwrap();
@@ -118,12 +121,12 @@ impl KeySpace {
     }
 
     /// Reconstructs a public key from bytes
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use factory::secp::KeySpace;
-    /// 
+    ///
     /// let key_space = KeySpace::new();
     /// let public_bytes = key_space.to_bytes_public_key();
     /// let public_key = KeySpace::public_key_from_bytes(&public_bytes).unwrap();
@@ -134,12 +137,12 @@ impl KeySpace {
     }
 
     /// Reconstructs a secret key from bytes
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use factory::secp::KeySpace;
-    /// 
+    ///
     /// let key_space = KeySpace::new();
     /// let secret_bytes = key_space.to_bytes_secret_key();
     /// let secret_key = KeySpace::secret_key_from_bytes(&secret_bytes).unwrap();
@@ -148,4 +151,4 @@ impl KeySpace {
     pub fn secret_key_from_bytes(bytes: &[u8]) -> Result<SigningKey, Box<dyn std::error::Error>> {
         Ok(SigningKey::from_slice(bytes)?)
     }
-} 
+}
