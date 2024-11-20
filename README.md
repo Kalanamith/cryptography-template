@@ -1,19 +1,21 @@
 # Cryptography Tools
 
-A Rust workspace containing cryptographic utilities and a CLI application for managing cryptographic keys and addresses.
+[![Rust CI](https://github.com/Kalanamith/cryptography-template/actions/workflows/rust.yml/badge.svg)](https://github.com/Kalanamith/cryptography-template/actions/workflows/rust.yml)
+
+A CLI tool for managing Secp256K1 cryptographic keys, supporting key generation, conversion, and blockchain address derivation.
 
 ## Components
 
 ### Factory Library
 Core cryptographic functionality:
-- Key generation and management
-- Blockchain address generation
-- Signature operations
-- Serialization utilities
+- Secp256K1 key pair generation
+- Blockchain address derivation
+- ECDSA signature operations
+- Key serialization utilities
 
 ### Execute CLI
 Command-line interface for:
-- Generating single or multiple key pairs
+- Generating single or multiple Secp256K1 key pairs
 - Converting keys between formats
 - Computing blockchain addresses
 - Saving keys to JSON files
