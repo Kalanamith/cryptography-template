@@ -2,20 +2,45 @@
 
 [![Rust CI](https://github.com/Kalanamith/cryptography-template/actions/workflows/rust.yml/badge.svg)](https://github.com/Kalanamith/cryptography-template/actions/workflows/rust.yml)
 
-A CLI tool for managing Secp256K1 cryptographic keys, supporting key generation, conversion, and blockchain address derivation.
+A CLI tool for managing Secp256k1 cryptographic keys, supporting key generation, conversion, and blockchain address derivation.
+
+## Prerequisites
+
+### Install Rust (1.79.0 or newer)
+
+1. Install Rustup (Rust installer and version manager):
+```bash
+# For Unix-like OS (Linux, macOS)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# For Windows, download and run rustup-init.exe from:
+# https://rustup.rs
+```
+
+2. Install and set Rust 1.79.0:
+```bash
+# Install Rust 1.79.0
+rustup install 1.79.0
+
+# Set as default
+rustup default 1.79.0
+
+# Verify installation
+rustc --version  # Should show: rustc 1.79.0
+```
 
 ## Components
 
 ### Factory Library
 Core cryptographic functionality:
-- Secp256K1 key pair generation
+- ECDSA key pair generation
 - Blockchain address derivation
 - ECDSA signature operations
 - Key serialization utilities
 
 ### Execute CLI
 Command-line interface for:
-- Generating single or multiple Secp256K1 key pairs
+- Generating single or multiple key pairs
 - Converting keys between formats
 - Computing blockchain addresses
 - Saving keys to JSON files
@@ -122,6 +147,13 @@ cargo test -- --nocapture
 # Run specific test
 cargo test test_key_generation
 ```
+
+## Troubleshooting
+
+If you encounter build errors, ensure:
+1. You have Rust 1.79.0 or newer installed
+2. All dependencies are up to date
+3. Your system meets the minimum requirements
 
 ## License
 Apache License 2.0
