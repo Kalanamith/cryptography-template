@@ -1,42 +1,28 @@
-# Cryptography Template
+# Cryptography CLI
 
-```markdown
-This Rust application demonstrates cryptographic operations using the secp256k1 library. It generates key pairs, signs and verifies messages, and computes Ethereum-like addresses from public keys.
+This Rust CLI application demonstrates cryptographic operations using the k256 library. It generates key pairs, signs and verifies messages, and computes blockchain addresses from public keys.
 
 ## Usage
 
-1. Make sure you have Rust and Cargo installed. If not, you can install them using Rust's official tool, rustup: [https://rustup.rs/](https://rustup.rs/)
+1. Generate key pairs:
+```bash
+cargo run -- generate
+# Or save to file:
+cargo run -- generate -o keys.json
+```
 
-2. Clone or download this repository:
+2. Reconstruct public key:
+```bash
+cargo run -- reconstruct-public -k <hex_string>
+```
 
-   ```bash
-   git clone https://github.com/yourusername/cryptography-template.git
-   cd cryptography-template
-   ```
+3. Reconstruct private key:
+```bash
+cargo run -- reconstruct-private -k <hex_string>
+```
 
-3. Build and Run the Application:
-
-   ```bash
-   cargo run
-   ```
-
-4. Output:
-
-   The application will output information about generated key pairs, signatures, and verification results.
-
-## Code Explanation
-
-The application demonstrates the following operations:
-
-- Generating a new key pair using the `KeySpace` struct from the `template::secp` module.
-- Converting keys to different formats, such as hex strings and byte arrays.
-- Signing and verifying a message using secp256k1 elliptic curve cryptography.
-- Computing Ethereum-like addresses from public keys.
-
-The `Payload` struct is used to create a sample message for signing and verification.
-
-## Dependencies
-
-- `secp256k1`: A library for secp256k1 elliptic curve cryptography.
-- `serde`: A serialization and deserialization library.
-- `hex`: A library for working with hexadecimal strings.
+## Features
+- Generate ECDSA key pairs
+- Convert keys to/from hex format
+- Generate blockchain addresses
+- Save keys to JSON files

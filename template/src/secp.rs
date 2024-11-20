@@ -1,91 +1,55 @@
-use anyhow::{anyhow, Error};
-use secp256k1::rand::rngs::OsRng;
-use secp256k1::{PublicKey, Secp256k1, SecretKey};
+use k256::{
+    ecdsa::SigningKey,
+    PublicKey,
+};
 
 #[derive(Debug, PartialEq)]
 pub struct KeySpace {
-    pub secret_key: SecretKey,
+    pub secret_key: SigningKey,
     pub public_key: PublicKey,
 }
 
-impl Default for KeySpace {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 impl KeySpace {
     pub fn new() -> Self {
-        let secp_256k1 = Secp256k1::new();
-        let (secret_key, public_key) = secp_256k1.generate_keypair(&mut OsRng);
-
-        KeySpace {
+        let secret_key = SigningKey::random(&mut rand::thread_rng());
+        let verifying_key = secret_key.verifying_key();
+        let public_key = PublicKey::from(verifying_key);
+        
+        Self {
             secret_key,
             public_key,
         }
     }
 
-    pub fn from_bytes_key_space(bytes: &[u8]) -> Result<Self, Error> {
-        let secret_key = match SecretKey::from_slice(&bytes[0..32]) {
-            Ok(secret_key) => secret_key,
-            Err(err) => {
-                let message = format!("Invalid secret key: {}", err);
-                return Err(anyhow!(message));
-            }
-        };
-        let public_key = match PublicKey::from_slice(&bytes[32..]) {
-            Ok(public_key) => public_key,
-            Err(err) => {
-                let message = format!("Invalid public key: {}", err);
-                return Err(anyhow!(message));
-            }
-        };
+    pub fn to_bytes_public_key(&self) -> Vec<u8> {
+        self.public_key.to_sec1_bytes().to_vec()
+    }
 
-        Ok(KeySpace {
+    pub fn to_bytes_secret_key(&self) -> Vec<u8> {
+        self.secret_key.to_bytes().to_vec()
+    }
+
+    pub fn to_bytes_key_space(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(&self.to_bytes_secret_key());
+        bytes.extend_from_slice(&self.to_bytes_public_key());
+        bytes
+    }
+
+    pub fn from_bytes_key_space(bytes: &[u8]) -> Result<Self, Box<dyn std::error::Error>> {
+        let secret_key = SigningKey::from_slice(&bytes[..32])?;
+        let public_key = PublicKey::from_sec1_bytes(&bytes[32..])?;
+        Ok(Self {
             secret_key,
             public_key,
         })
     }
 
-    pub fn public_key_from_bytes(bytes: &[u8]) -> Result<PublicKey, Error> {
-        let public_key = match PublicKey::from_slice(bytes) {
-            Ok(public_key) => public_key,
-            Err(err) => {
-                let message = format!("Invalid public key: {}", err);
-                return Err(anyhow!(message));
-            }
-        };
-        Ok(public_key)
+    pub fn public_key_from_bytes(bytes: &[u8]) -> Result<PublicKey, Box<dyn std::error::Error>> {
+        Ok(PublicKey::from_sec1_bytes(bytes)?)
     }
 
-    pub fn secret_key_from_bytes(bytes: &[u8]) -> Result<SecretKey, Error> {
-        let secret_key = match SecretKey::from_slice(bytes) {
-            Ok(secret_key) => secret_key,
-            Err(err) => {
-                return {
-                    let message = format!("Invalid private key: {}", err);
-                    Err(anyhow!(message))
-                }
-            }
-        };
-        Ok(secret_key)
-    }
-
-    pub fn to_bytes_key_space(&self) -> Vec<u8> {
-        let mut bytes = Vec::new();
-        bytes.extend_from_slice(&self.secret_key[..]);
-        bytes.extend_from_slice(&self.public_key.serialize()[..]);
-        bytes
-    }
-
-    pub fn to_bytes_public_key(&self) -> Vec<u8> {
-        let mut bytes = Vec::new();
-        bytes.extend_from_slice(&self.public_key.serialize()[..]);
-        bytes
-    }
-
-    pub fn to_bytes_secret_key(&self) -> Vec<u8> {
-        let mut bytes = Vec::new();
-        bytes.extend_from_slice(&self.secret_key[..]);
-        bytes
+    pub fn secret_key_from_bytes(bytes: &[u8]) -> Result<SigningKey, Box<dyn std::error::Error>> {
+        Ok(SigningKey::from_slice(bytes)?)
     }
 }
